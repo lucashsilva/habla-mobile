@@ -44,8 +44,8 @@ export interface AppTranslations {
                     male: string;
                     female: string;
                     other: string; 
-                }
-            }
+                };
+            },
             buttons: {
                 next: string
             }
@@ -67,6 +67,9 @@ export interface AppTranslations {
             buttons: {
                 submit: string;
             }
+        },
+        newChannel:{
+            inputPlaceholder: string;
         },
         notifications: {
             title: string;

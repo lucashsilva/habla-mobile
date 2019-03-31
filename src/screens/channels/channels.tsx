@@ -4,6 +4,11 @@ import { client } from '../../services/client';
 import gql from 'graphql-tag';
 import THEME from '../../theme/theme';
 import i18n from 'i18n-js';
+import ActionButton from 'react-native-action-button';
+import { FontAwesome} from '@expo/vector-icons';
+import Modal from "react-native-modal";
+import NewChannelScreen from '../new-channel/new-channel';
+
 
 export default class ChannelsScreen extends React.Component<ChannelsScreenProps, ChannelsScreenState> {
   static navigationOptions = () => {
@@ -22,11 +27,15 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
   constructor(props) {
     super(props);
 
-    this.state = { channels: [], refreshing: false };
+    this.state = { channels: [], refreshing: false, showNewChannelModal: false };
   }
 
   componentWillMount() {
     this.refresh();
+  }
+
+  newChannel = () => {
+    this.setState({ showNewChannelModal: true });
   }
 
   refresh = async() => {
@@ -60,6 +69,12 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
     }
   }
 
+  onPostSent = (channel) => {
+    this.setState({ showNewChannelModal: false });
+    
+    this.setState({ channels: [channel, ...this.state.channels]});
+  }
+
   render() {
     return (
       <ScrollView contentContainerStyle={styles.page.container}
@@ -78,6 +93,21 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
                       <Text style={styles.channel.channelTitle}>#{ item.name }</Text>
                     </TouchableOpacity>
         )}/>
+        <ActionButton buttonColor={THEME.colors.secondary.default}
+                      position="right"
+                      hideShadow={true}
+                      offsetY={10}
+                      onPress={this.newChannel}
+                      renderIcon={() => <FontAwesome name="plus" size={28} color={'#F5F5F5'}/>}/>
+        <Modal isVisible={this.state.showNewChannelModal}
+               avoidKeyboard={true}
+               style={styles.page.newChannelModal}
+               animationInTiming={400}
+               animationOutTiming={400}>
+               <NewChannelScreen navigation={this.props.navigation} 
+                         onSuccess={this.onPostSent}
+                         onDismiss={() => this.setState({ showNewChannelModal: false })}/>
+        </Modal>
       </ScrollView>
     );
   }
@@ -88,7 +118,12 @@ const styles = {
     container: {
       flex: 1,
       backgroundColor: '#fff'
-    }
+    },
+    newChannelModal: {
+      width: '100%',
+      margin: 0,
+      padding: 0
+    },
   }),
   channel: StyleSheet.create({
     container: {
@@ -106,6 +141,7 @@ const styles = {
 interface ChannelsScreenState {
   channels: any[];
   refreshing: boolean;
+  showNewChannelModal: boolean
 }
 
 interface ChannelsScreenProps {
