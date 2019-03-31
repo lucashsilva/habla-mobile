@@ -55,6 +55,9 @@ const en: AppTranslations = {
                 submit: 'Send'
             }
         },
+        newChannel:{
+            inputPlaceholder: "Type it channel name..."
+        },
         notifications: {
             title: 'Notifications',
             notificationTypes: {

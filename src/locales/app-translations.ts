@@ -55,6 +55,9 @@ export interface AppTranslations {
                 submit: string;
             }
         },
+        newChannel:{
+            inputPlaceholder: string;
+        },
         notifications: {
             title: string;
             notificationTypes: {
