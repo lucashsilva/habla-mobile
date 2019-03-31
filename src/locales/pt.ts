@@ -33,6 +33,19 @@ const pt: AppTranslations = {
         profileCreation: {
             title: 'Perfil',
             subtitle: "Você está quase lá, {{name}}! Vamos criar o seu perfil público.",
+            labels: {
+                name: 'Nome',
+                username: 'Usuário',
+                bio: 'Bio',
+                website: 'Website',
+                phone: 'Telefone',
+                genderEnum: {
+                    gender: 'Gênero',
+                    male: 'Masculino',
+                    female: 'Feminino',
+                    other: 'Outro'
+                }
+            },
             buttons: {
                 next: 'Continuar'
             }

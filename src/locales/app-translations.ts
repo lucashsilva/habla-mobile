@@ -31,8 +31,21 @@ export interface AppTranslations {
             }
         },
         profileCreation: {
-            title: string,
-            subtitle: string,
+            title: string;
+            subtitle: string;
+            labels: {
+                name: string;
+                username: string;
+                bio: string;
+                website: string;
+                phone: string;
+                genderEnum: {
+                    gender: string;
+                    male: string;
+                    female: string;
+                    other: string; 
+                }
+            }
             buttons: {
                 next: string
             }

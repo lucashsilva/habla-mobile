@@ -33,6 +33,19 @@ const en: AppTranslations = {
         profileCreation: {
             title: 'Profile',
             subtitle: "You're almost ready to start using Habla, {{name}}! Let's create your pubic profile.",
+            labels: {
+                name: 'Name',
+                username: 'Username',
+                bio: 'Bio',
+                website: 'Website',
+                phone: 'Phone',
+                genderEnum: {
+                    gender: 'Gender',
+                    male: 'Male',
+                    female: 'Female',
+                    other: 'Other'
+                }
+            },
             buttons: {
                 next: 'Next'
             }
