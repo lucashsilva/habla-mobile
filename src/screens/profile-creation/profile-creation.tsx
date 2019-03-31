@@ -76,9 +76,9 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
             </Text>
             
             <View style={styles.page.form.row}>
-              <Text style={styles.page.form.label}>{i18n.t('screens.profileCreation.labels.name')}</Text>
+              <Text style={styles.page.form.label}>{ i18n.t('screens.profileCreation.labels.name') }</Text>
               <TextInput style={styles.page.form.textInput}
-                      placeholder={i18n.t('screens.profileCreation.labels.name')}
+                      placeholder={ i18n.t('screens.profileCreation.labels.name') }
                       value={this.state.profile.name}
                       onChangeText={text => this.setState({ profile: { ...this.state.profile, name: text }})}
                       underlineColorAndroid="rgba(0, 0, 0, 0)"
@@ -86,9 +86,9 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
             </View>
             
             <View style={styles.page.form.row}>
-              <Text style={styles.page.form.label}>{i18n.t('screens.profileCreation.labels.username')}</Text>
+              <Text style={styles.page.form.label}>{ i18n.t('screens.profileCreation.labels.username') }</Text>
               <TextInput style={styles.page.form.textInput}
-                       placeholder={i18n.t('screens.profileCreation.labels.username')}
+                       placeholder={ i18n.t('screens.profileCreation.labels.username') }
                        value={this.state.profile.username}
                        onChangeText={text => this.setState({ profile: { ...this.state.profile, username: text }})}
                        underlineColorAndroid="rgba(0, 0, 0, 0)"
@@ -98,9 +98,9 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
             </View>               
             
             <View style={styles.page.form.row}>
-            <Text style={styles.page.form.label}>{i18n.t('screens.profileCreation.labels.bio')}</Text>
+            <Text style={styles.page.form.label}>{ i18n.t('screens.profileCreation.labels.bio') }</Text>
             <TextInput style={styles.page.form.textInput}
-                       placeholder={i18n.t('screens.profileCreation.labels.bio')}
+                       placeholder={ i18n.t('screens.profileCreation.labels.bio') }
                        value={this.state.profile.bio}
                        onChangeText={text => this.setState({ profile: { ...this.state.profile, bio: text }})}
                        underlineColorAndroid="rgba(0, 0, 0, 0)"
@@ -108,9 +108,9 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
             </View>
 
             <View style={styles.page.form.row}>
-              <Text style={styles.page.form.label}>{i18n.t('screens.profileCreation.labels.website')}</Text>
+              <Text style={styles.page.form.label}>{ i18n.t('screens.profileCreation.labels.website') }</Text>
               <TextInput style={styles.page.form.textInput}
-                       placeholder={i18n.t('screens.profileCreation.labels.website')}
+                       placeholder={ i18n.t('screens.profileCreation.labels.website') }
                        value={this.state.profile.website}
                        onChangeText={text => this.setState({ profile: { ...this.state.profile, website: text }})}
                        underlineColorAndroid="rgba(0, 0, 0, 0)"
@@ -118,9 +118,9 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
             </View>            
             
             <View style={styles.page.form.row}>
-              <Text style={styles.page.form.label}>{i18n.t('screens.profileCreation.labels.phone')}</Text>
+              <Text style={styles.page.form.label}>{ i18n.t('screens.profileCreation.labels.phone') }</Text>
               <TextInput style={styles.page.form.textInput}
-                       placeholder={i18n.t('screens.profileCreation.labels.phone')}
+                       placeholder={ i18n.t('screens.profileCreation.labels.phone') }
                        value={this.state.profile.phone}
                        onChangeText={text => this.setState({ profile: { ...this.state.profile, phone: text }})}
                        underlineColorAndroid="rgba(0, 0, 0, 0)"
@@ -128,15 +128,15 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
             </View>
 
             <View style={styles.page.form.row}>
-              <Text style={styles.page.form.label}>{i18n.t('screens.profileCreation.labels.genderEnum.gender')}</Text>
+              <Text style={styles.page.form.label}>{ i18n.t('screens.profileCreation.labels.genderEnum.gender') }</Text>
               <Picker 
                 style={styles.page.form.picker}
                 selectedValue={this.state.profile.gender}
                 onValueChange={text => this.setState({ profile: { ...this.state.profile, gender: text }})}>
 
-                <Picker.Item label={i18n.t('screens.profileCreation.labels.genderEnum.gender.male')} value="MALE"/>
-                <Picker.Item label={i18n.t('screens.profileCreation.labels.genderEnum.gender.female')} value="FEMALE"/>
-                <Picker.Item label={i18n.t('screens.profileCreation.labels.genderEnum.gender.other')} value="OTHER"/> 
+                <Picker.Item label={ i18n.t('screens.profileCreation.labels.genderEnum.gender.male') } value="MALE"/>
+                <Picker.Item label={ i18n.t('screens.profileCreation.labels.genderEnum.gender.female') } value="FEMALE"/>
+                <Picker.Item label={ i18n.t('screens.profileCreation.labels.genderEnum.gender.other') } value="OTHER"/> 
               </Picker>
             </View>    
 
