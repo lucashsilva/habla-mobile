@@ -67,7 +67,7 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
 
       this.props.onSuccess && this.props.onSuccess(response.data.createPost);
     } catch (error) {
-      if (error.graphQLErrors) {
+      if (error.graphQLErrors.find(e => e.code == 'INSUFFICENT_SCORE_ERROR')) {
         const errorMessage = i18n.t('screens.newPost.errors.insufficentScore');
 
         this.setState({ errorMessage });
