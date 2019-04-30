@@ -5,6 +5,9 @@ import gql from 'graphql-tag';
 import THEME from '../../theme/theme';
 import i18n from 'i18n-js';
 import { Location, Permissions } from 'expo';
+import { Ionicons } from '@expo/vector-icons';
+import Modal from "react-native-modal";
+import NewChannelScreen from '../new-channel/new-channel';
 import { SearchBar } from 'react-native-elements';
 
 export default class ChannelsScreen extends React.Component<ChannelsScreenProps, ChannelsScreenState> {
@@ -17,7 +20,12 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
       },
       headerTitleStyle: {
         color: '#F5F5F5'
-      }
+      },
+      headerRight: (
+        <TouchableOpacity onPress={navigation.getParam('newChannelTapped')} style={styles.page.newChannelButton}>
+          <Ionicons name="ios-create" size={30} color="white"/>
+        </TouchableOpacity>
+      )
     }
   };
 
@@ -26,16 +34,22 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
   constructor(props) {
     super(props);
 
-    this.state = { channels: [], refreshing: false, loadingMoreChannels: false, searchString: '' };
+    this.state = { channels: [], refreshing: false, showNewChannelModal: false, loadingMoreChannels: false, searchString: '' };
+
+    this.props.navigation.setParams({ newChannelTapped: this.newChannelTapped });
   }
 
   componentWillMount() {
     this.refresh();
   }
 
+  newChannelTapped = () => {
+    this.setState({ showNewChannelModal: true });
+  }
+
   refresh = () => {
     let refreshPromise = new Promise(async(resolve, reject) => {
-      this.setState({ refreshing: true });
+      await this.setState({ refreshing: true });
 
       let channels;
     
@@ -48,6 +62,8 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
 
       if (this.currentRefreshPromise == refreshPromise) {
         this.setState({ channels, refreshing: false });
+      } else {
+        console.log('oi')
       }
 
       resolve();
@@ -59,7 +75,7 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
   }
 
   loadMoreChannels = async() => {
-    if (this.state.refreshing || this.state.loadingMoreChannels) return;
+    if (this.state.loadingMoreChannels) return;
 
     this.setState({ loadingMoreChannels: true });
 
@@ -110,7 +126,7 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
   }
 
   onChannelCreated = (channel) => {
-    this.setState({ channels: [channel, ...this.state.channels] });
+    this.setState({ showNewChannelModal: false, channels: [channel, ...this.state.channels] });
     
     this.props.navigation.navigate('TimelineScreen', { channel: channel });
   }
@@ -157,6 +173,15 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
                       </View>
                     </TouchableOpacity>
         )}/>
+        <Modal isVisible={this.state.showNewChannelModal}
+               avoidKeyboard={true}
+               style={styles.page.newChannelModal}
+               animationInTiming={400}
+               animationOutTiming={400}>
+               <NewChannelScreen navigation={this.props.navigation} 
+                         onSuccess={this.onChannelCreated}
+                         onDismiss={() => this.setState({ showNewChannelModal: false })}/>
+        </Modal>
       </View>
     );
   }
@@ -167,6 +192,14 @@ const styles = {
     container: {
       flex: 1,
       backgroundColor: '#fff'
+    },
+    newChannelModal: {
+      width: '100%',
+      margin: 0,
+      padding: 0
+    },
+    newChannelButton: {
+      marginRight: 10
     },
     listFooter: {
       padding: 10
@@ -212,6 +245,7 @@ interface ChannelsScreenState {
   channels: any[];
   refreshing: boolean;
   loadingMoreChannels: boolean;
+  showNewChannelModal: boolean;
   searchString: string;
 }
 

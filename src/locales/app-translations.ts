@@ -73,6 +73,9 @@ export interface AppTranslations {
             anonymous: string;
             
         },
+        newChannel:{
+            inputPlaceholder: string;
+        },
         notifications: {
             title: string;
             notificationTypes: {

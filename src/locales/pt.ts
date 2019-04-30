@@ -72,6 +72,9 @@ const pt: AppTranslations = {
             },
             anonymous: "Anônimo"
         },
+        newChannel: {
+            inputPlaceholder: "#Canal",
+        },
         notifications: {
             title: 'Notificações',
             notificationTypes: {

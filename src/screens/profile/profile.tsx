@@ -79,7 +79,7 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
                   username
                   photoURL
                 }
-                channels {
+                channel {
                   id
                   name
                 }
