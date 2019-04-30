@@ -60,12 +60,12 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
 
   refresh = () => {
     let refreshPromise = new Promise(async(resolve, reject) => {
-      await this.setState({ refreshing: true });
+      this.setState({ refreshing: true });
 
       let posts;
     
       try {
-        posts = await this.fetchPosts({ limit: 20});
+        posts = await this.fetchPosts({ limit: 20 });
       } catch (error) {
         console.log(error);
         reject(error);
@@ -73,8 +73,8 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
 
       if (this.currentRefreshPromise == refreshPromise) {
         this.setState({ posts, refreshing: false });
-      } else {
-        console.log('oi')
+
+        await AsyncStorage.setItem('cached-timeline', JSON.stringify(this.state.posts));
       }
 
       resolve();
@@ -86,7 +86,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
   }
 
   loadMorePosts = async() => {
-    if (this.state.loadingMorePosts) return;
+    if (this.state.refreshing || this.state.loadingMorePosts) return;
 
     this.setState({ loadingMorePosts: true });
 
@@ -129,7 +129,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
                   username
                   photoURL
                 }
-                channel {
+                channels {
                   id
                   name
                 }
@@ -176,8 +176,10 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
 
   onPostSent = (post) => {
     this.setState({ showNewPostModal: false });
-    
-    this.setState({ posts: [post, ...this.state.posts]});
+
+    if (this.props.navigation.state.params && this.props.navigation.state.params.channel && post.channels.find(c => c.name == this.props.navigation.state.params.channel.name)) {
+      this.setState({ posts: [post, ...this.state.posts]});
+    }
   }
 
   isRoot() {

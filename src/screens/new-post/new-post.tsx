@@ -31,6 +31,7 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
 
     try {
       const response = await client.mutate({
+
         variables: {
           post: this.state.post,
           channelId: this.props.channel ? this.props.channel.id : null,
@@ -42,13 +43,14 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
               id,
               body,
               distance,
+
               createdAt
               owner {
                 uid
                 username
                 photoURL
               }
-              channel {
+              channels {
                 id
                 name
               }
@@ -79,6 +81,7 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
   resetPost() {
     this.setState({
       post: {
+        body: this.props.channel && `#${this.props.channel.name}`
 
       }
     });

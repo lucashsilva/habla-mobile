@@ -76,7 +76,7 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
               name
               photoURL
             }
-            channel {
+            channels {
               id
               name
             }
