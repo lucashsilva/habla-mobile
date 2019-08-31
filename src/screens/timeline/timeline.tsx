@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { FlatList, View, StyleSheet, ScrollView, TouchableOpacity, RefreshControl, StatusBar, Text, AsyncStorage, Button, TouchableHighlight, ActivityIndicator } from 'react-native';
+import { FlatList, View, StyleSheet, Alert, TouchableOpacity, RefreshControl, StatusBar, Text, AsyncStorage, Button, TouchableHighlight, ActivityIndicator } from 'react-native';
 import PostComponent from '../../components/post/post';
 import { Platform } from 'expo-core';
 import ActionButton from 'react-native-action-button';
@@ -16,29 +16,29 @@ import { sortPostsByPopularity, getReverseLocationFromCoords } from '../../util'
 import _ from 'lodash';
 
 export default class TimelineScreen extends React.Component<TimelineProps, TimelineState> {
-  static navigationOptions = ({navigation}) => {
+  static navigationOptions = ({ navigation }) => {
     let params = navigation.state.params || {};
 
-    let { changeLocation, availableLocations, loadingLocationInfo, currentLocationName } = params;
+    let { changeLocationOpen, loadingLocationInfo, currentLocationName } = params;
 
     return {
-      title: params && params.channel? `#${params.channel.name}`: i18n.t('screens.timeline.title'), 
-      headerTitle:(
-        <TouchableOpacity style={styles.page.headerTouchable} onPress={changeLocation} disabled={!(availableLocations && availableLocations.length > 1)}>
-          {(loadingLocationInfo || !currentLocationName)? 
-            <ActivityIndicator size="small" style={styles.page.locationLoading} color="white"/>:
+      title: params && params.channel ? `#${params.channel.name}` : i18n.t('screens.timeline.title'),
+      headerTitle: (
+        <TouchableOpacity style={styles.page.headerTouchable} onPress={changeLocationOpen}>
+          {(loadingLocationInfo || !currentLocationName) ?
+            <ActivityIndicator size="small" style={styles.page.locationLoading} color="white" /> :
             <View style={styles.page.headerTouchableLocation}>
-              <Ionicons name="md-pin" color="white" size={20}/>
-              <Text style={{color: 'white', marginLeft: 5, fontWeight: "400", fontSize: 18}}>{currentLocationName}</Text>
+              <Ionicons name="md-pin" color="white" size={20} />
+              <Text style={{ color: 'white', marginLeft: 5, fontWeight: "400", fontSize: 18 }}>{currentLocationName}</Text>
             </View>
           }
         </TouchableOpacity>
       ),
-      headerRight: !(params && params.channel)? (
+      headerRight: !(params && params.channel) ? (
         <TouchableOpacity onPress={() => navigation.navigate('NotificationsScreen')} style={styles.page.notificationButton}>
-          <MaterialIcons name="notifications" size={30} color="white"/>
+          <MaterialIcons name="notifications" size={30} color="white" />
         </TouchableOpacity>
-      ): null,
+      ) : null,
       headerStyle: {
         backgroundColor: THEME.colors.primary.default,
         borderBottomWidth: 0,
@@ -56,24 +56,25 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
   constructor(props: TimelineProps) {
     super(props);
 
-    this.state = { 
+    this.state = {
       currentLocation: [],
       availableLocations: [],
       posts: [],
       refreshing: true,
       loadingMorePosts: false,
       showNewPostModal: false,
+      showChangeLocationModal: false,
       canLoadMorePosts: false,
       selectedIndex: 0
     };
 
-    this.props.navigation.setParams({ changeLocation: this.changeLocation, loadingLocationInfo: true });
+    this.props.navigation.setParams({ changeLocationOpen: this.changeLocationOpen, loadingLocationInfo: true });
   }
 
-  componentWillMount = async() => {
+  componentWillMount = async () => {
     let lastLocation: any = await AsyncStorage.getItem('last-location');
 
-    lastLocation = lastLocation? JSON.parse(lastLocation): null;
+    lastLocation = lastLocation ? JSON.parse(lastLocation) : null;
 
     if (lastLocation) {
       this.props.navigation.setParams({ currentLocationName: lastLocation.city || lastLocation.street });
@@ -82,14 +83,14 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
     if (!this.hasChannel()) {
       let cachedPosts: any = await AsyncStorage.getItem('cached-timeline');
 
-      this.setState({ posts: cachedPosts? JSON.parse(cachedPosts): [] });
+      this.setState({ posts: cachedPosts ? JSON.parse(cachedPosts) : [] });
     }
-    
+
     await this.refresh({ resetCurrentLocation: true });
   }
 
   refresh = (options: RefreshOptions = {}) => {
-    let refreshPromise = new Promise(async(resolve, reject) => {
+    let refreshPromise = new Promise(async (resolve, reject) => {
       this.setState({ refreshing: true });
 
       let cachedProfile: any = await AsyncStorage.getItem('cached-profile');
@@ -107,11 +108,11 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
 
       this.props.navigation.setParams({ availableLocations });
 
-      this.setState({ 
-        currentLocation: options.resetCurrentLocation? currentLocation: (options.setLocation || this.state.currentLocation),
+      this.setState({
+        currentLocation: options.resetCurrentLocation ? currentLocation : (options.setLocation || this.state.currentLocation),
         availableLocations: availableLocations,
         canLoadMorePosts: true
-      }, async() => {
+      }, async () => {
         if (locationHasChanged) {
           this.props.navigation.setParams({ loadingLocationInfo: true });
 
@@ -126,7 +127,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
       });
 
       let posts;
-    
+
       try {
         posts = await this.fetchPosts({ limit: 20 });
       } catch (error) {
@@ -137,7 +138,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
       }
 
       if (this.currentRefreshPromise == refreshPromise) {
-        this.setState({ posts, refreshing: false, errorMessage: null }, async() => {
+        this.setState({ posts, refreshing: false, errorMessage: null }, async () => {
           if (!this.hasChannel() && !this.showHomePosts) await AsyncStorage.setItem('cached-timeline', JSON.stringify(posts));
         });
       }
@@ -150,14 +151,14 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
     return refreshPromise;
   }
 
-  loadMorePosts = async() => {
+  loadMorePosts = async () => {
     if (this.state.refreshing || this.state.loadingMorePosts) return;
 
     this.setState({ loadingMorePosts: true });
 
     try {
-      let posts = await this.fetchPosts({ limit: 10, ignoreIds: this.state.posts.map(c => c.id)});
-      
+      let posts = await this.fetchPosts({ limit: 10, ignoreIds: this.state.posts.map(c => c.id) });
+
       this.setState({ posts: [...this.state.posts, ...posts], errorMessage: null });
     } catch (error) {
       console.log(error);
@@ -166,10 +167,10 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
     }
   }
 
-  fetchPosts = async(options: FetchPostsOptions = { limit: 20, ignoreIds: [] }) => {
+  fetchPosts = async (options: FetchPostsOptions = { limit: 20, ignoreIds: [] }) => {
     try {
       const location = this.state.currentLocation;
-      const channelId = this.props.navigation.state.params && this.props.navigation.state.params.channel? this.props.navigation.state.params.channel.id: null;
+      const channelId = this.props.navigation.state.params && this.props.navigation.state.params.channel ? this.props.navigation.state.params.channel.id : null;
 
       const response = await client.query<any>({
         variables: {
@@ -214,10 +215,10 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
         },
         fetchPolicy: 'no-cache'
       });
-      
-      return this.state.selectedIndex === 1? sortPostsByPopularity(response.data.posts): response.data.posts;
+
+      return this.state.selectedIndex === 1 ? sortPostsByPopularity(response.data.posts) : response.data.posts;
     } catch (error) {
-      const errorMessage = error.networkError? i18n.t('screens.timeline.errors.fetchingPosts.connection'): i18n.t('screens.timeline.errors.fetchingPosts.unexpected');
+      const errorMessage = error.networkError ? i18n.t('screens.timeline.errors.fetchingPosts.connection') : i18n.t('screens.timeline.errors.fetchingPosts.unexpected');
 
       this.setState({ errorMessage });
 
@@ -249,12 +250,32 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
     this.setState({ showNewPostModal: true });
   }
 
+  changeLocationOpen = () => {
+    this.setState({ showChangeLocationModal: true });
+  }
+
+  changeLocationClose = () => {
+    this.setState({ showChangeLocationModal: false });
+  }
+
   onPostSent = (post) => {
     this.setState({ showNewPostModal: false });
 
     if (!this.hasChannel() || (post.channels.find(c => c.name == this.currentChannel.name))) {
-      this.setState({ posts: [post, ...this.state.posts]});
+      this.setState({ posts: [post, ...this.state.posts] });
     }
+  }
+
+  onLocationChange = () => {
+    Alert.alert(
+      "Pegando",
+      i18n.t('screens.profileEdition.alert.message'),
+      [
+        { text: "cancela", onPress: () => { } },
+        { text: "define", onPress: () => { } }
+      ],
+      { cancelable: false }
+    )
   }
 
   hasChannel() {
@@ -272,7 +293,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
 
   changeLocation = () => {
     this.showHomePosts = !this.showHomePosts;
-    
+
     if (this.showHomePosts) {
       return this.refresh({ resetCurrentLocation: false, setLocation: this.state.availableLocations[1] });
     } else {
@@ -290,65 +311,76 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
     return (
       <View style={styles.page.container}>
         <View style={styles.page.container}>
-          <StatusBar barStyle="light-content"/>
-          { this.state.errorMessage && 
-          <View style={styles.page.errorView}>
-            <Ionicons name="ios-sad" size={100} color="white"/>
-            <Text style={styles.page.errorText}>{ this.state.errorMessage }</Text>
-          </View>}
-          { this.currentChannel && 
+          <StatusBar barStyle="light-content" />
+          {this.state.errorMessage &&
+            <View style={styles.page.errorView}>
+              <Ionicons name="ios-sad" size={100} color="white" />
+              <Text style={styles.page.errorText}>{this.state.errorMessage}</Text>
+            </View>}
+          {this.currentChannel &&
             <View style={styles.page.currentChannelView}>
-              <Text style={styles.page.currentChannelText}>#{ this.currentChannel.name }</Text>
+              <Text style={styles.page.currentChannelText}>#{this.currentChannel.name}</Text>
             </View>}
           <FlatList data={this.state.posts}
-                    keyExtractor={(item) => item.id.toString()}
-                    onEndReached={this.loadMorePosts}
-                    onEndReachedThreshold={0.5}
-                    refreshing={this.state.refreshing}
-                    refreshControl={
-                      <RefreshControl
-                        refreshing={this.state.refreshing}
-                        onRefresh={() => this.refresh({ resetCurrentLocation: false })}
-                      />
-                    }
-                    ListHeaderComponent={<SegmentedControlTab
-                      values={[i18n.t("screens.timeline.tabs.recent"), i18n.t("screens.timeline.tabs.trending")]}
-                      selectedIndex={this.state.selectedIndex}
-                      onTabPress={this.handleSelectedIndex}
-                      tabsContainerStyle={styles.page.tabsContainer}
-                      tabStyle={styles.page.tabStyle}
-                      activeTabStyle={styles.page.activeTabStyle}
-                      tabTextStyle={styles.page.tabTextStyle}
-                    />}
-                    ListFooterComponent={!this.state.refreshing && this.state.posts.length === 0 && <Text style={styles.page.noPosts}>There's nothing here yet. Be the first to create a post!</Text>}
-                    renderItem={({item}) =>(
-                    <TouchableOpacity onPress={() => this.openPost(item)}>
-                      <PostComponent post={item}
-                                    showPostHeader={true}
-                                    onOpenProfile={this.openProfile}
-                                    onOpenChannel={this.openChannel}
-                                    onPostDeleted={this.onPostDeleted}/>
-                    </TouchableOpacity>
-          )}/>
+            keyExtractor={(item) => item.id.toString()}
+            onEndReached={this.loadMorePosts}
+            onEndReachedThreshold={0.5}
+            refreshing={this.state.refreshing}
+            refreshControl={
+              <RefreshControl
+                refreshing={this.state.refreshing}
+                onRefresh={() => this.refresh({ resetCurrentLocation: false })}
+              />
+            }
+            ListHeaderComponent={<SegmentedControlTab
+              values={[i18n.t("screens.timeline.tabs.recent"), i18n.t("screens.timeline.tabs.trending")]}
+              selectedIndex={this.state.selectedIndex}
+              onTabPress={this.handleSelectedIndex}
+              tabsContainerStyle={styles.page.tabsContainer}
+              tabStyle={styles.page.tabStyle}
+              activeTabStyle={styles.page.activeTabStyle}
+              tabTextStyle={styles.page.tabTextStyle}
+            />}
+            ListFooterComponent={!this.state.refreshing && this.state.posts.length === 0 && <Text style={styles.page.noPosts}>There's nothing here yet. Be the first to create a post!</Text>}
+            renderItem={({ item }) => (
+              <TouchableOpacity onPress={() => this.openPost(item)}>
+                <PostComponent post={item}
+                  showPostHeader={true}
+                  onOpenProfile={this.openProfile}
+                  onOpenChannel={this.openChannel}
+                  onPostDeleted={this.onPostDeleted} />
+              </TouchableOpacity>
+            )} />
         </View>
         <ActionButton buttonColor={THEME.colors.secondary.light}
-                      position="center"
-                      hideShadow={true}
-                      offsetY={10}
-                      onPress={this.newPost}
-                      renderIcon={() => <FontAwesome name="plus" size={28} color={'#F5F5F5'}/>}/>
+          position="center"
+          hideShadow={true}
+          offsetY={10}
+          onPress={this.newPost}
+          renderIcon={() => <FontAwesome name="plus" size={28} color={'#F5F5F5'} />} />
+
+        <Modal isVisible={this.state.showChangeLocationModal}>
+          <View style={styles.page.modalContent}>
+            <Text>Hello!</Text>
+            <TouchableOpacity onPress={this.changeLocationClose}>
+              <View style={styles.page.button}>
+                <Text>Fechar</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        </Modal>
 
         <Modal isVisible={this.state.showNewPostModal}
-               avoidKeyboard={true}
-               style={styles.page.newPostModal}
-               animationInTiming={400}
-               onBackButtonPress={() => this.setState({ showNewPostModal: false })}
-               animationOutTiming={400}>
-          <NewPostScreen navigation={this.props.navigation} 
-                         onSuccess={this.onPostSent}
-                         onDismiss={() => this.setState({ showNewPostModal: false })}
-                         customLocation={this.state.currentLocation}
-                         channel={this.props.navigation.state.params && this.props.navigation.state.params.channel}/>
+          avoidKeyboard={true}
+          style={styles.page.newPostModal}
+          animationInTiming={400}
+          onBackButtonPress={() => this.setState({ showNewPostModal: false })}
+          animationOutTiming={400}>
+          <NewPostScreen navigation={this.props.navigation}
+            onSuccess={this.onPostSent}
+            onDismiss={() => this.setState({ showNewPostModal: false })}
+            customLocation={this.state.currentLocation}
+            channel={this.props.navigation.state.params && this.props.navigation.state.params.channel} />
         </Modal>
       </View>
     );
@@ -371,6 +403,15 @@ const styles = {
     activeTabStyle: {
       backgroundColor: THEME.colors.secondary.light,
       borderColor: THEME.colors.secondary.light
+    },
+    button: {
+      backgroundColor: 'lightblue',
+      padding: 12,
+      margin: 16,
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderRadius: 4,
+      borderColor: 'rgba(0, 0, 0, 0.1)',
     },
     tabTextStyle: {
       fontSize: 16,
@@ -398,14 +439,14 @@ const styles = {
     locationLoading: {
       margin: 5
     },
-    headerTouchable: { 
-      flexDirection: 'row', 
-      alignItems: 'center', 
-      backgroundColor: THEME.colors.primary.dark, 
-      borderRadius: 10, 
-      paddingVertical: 5, 
-      paddingHorizontal: 10, 
-      marginLeft: Platform.OS === 'android'? 10: null
+    headerTouchable: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: THEME.colors.primary.dark,
+      borderRadius: 10,
+      paddingVertical: 5,
+      paddingHorizontal: 10,
+      marginLeft: Platform.OS === 'android' ? 10 : null
     },
     headerTouchableLocation: {
       flexDirection: 'row'
@@ -426,7 +467,15 @@ const styles = {
       color: "white",
       fontWeight: "bold",
       fontSize: 20
-    }
+    },
+    modalContent: {
+      backgroundColor: 'white',
+      padding: 22,
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderRadius: 4,
+      borderColor: 'rgba(0, 0, 0, 0.1)',
+    },
   }),
 };
 
@@ -437,6 +486,7 @@ interface TimelineState {
   refreshing: boolean;
   loadingMorePosts: boolean;
   showNewPostModal: boolean;
+  showChangeLocationModal: boolean;
   canLoadMorePosts: boolean;
   selectedIndex: number;
   errorMessage?: string;
@@ -448,7 +498,7 @@ interface TimelineProps {
 
 interface FetchPostsOptions {
   limit?: number;
-  ignoreIds?: number[]; 
+  ignoreIds?: number[];
 }
 
 interface RefreshOptions {
