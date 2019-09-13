@@ -90,6 +90,10 @@ export interface AppTranslations {
             tabs: {
                 recent: string;
                 trending: string;
+            },
+            newLocation: {
+                searchPlaceholder: string;
+                cancelButton: string;
             }
         },
         channels: {

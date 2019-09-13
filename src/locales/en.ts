@@ -92,6 +92,10 @@ const en: AppTranslations = {
             tabs: {
                 recent: 'Recent',
                 trending: 'Trending'
+            },
+            newLocation: {
+                searchPlaceholder: 'Choose a place',
+                cancelButton: 'Cancel'
             }
         },
         channels: {
