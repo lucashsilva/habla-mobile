@@ -93,8 +93,12 @@ const pt: AppTranslations = {
                 trending: 'Em alta'
             },
             newLocation: {
-                searchPlaceholder: 'Escolha um lugar',
-                cancelButton: 'Cancelar'
+                searchPlaceholder: 'Escreva o nome de uma cidade...',
+                buttons: {
+                    seePostsAtCurrentLocation: "Ver posts na localização atual",
+                    seePostsAroundHome: "Ver posts perto de casa",
+                    cancel: "Cancelar"
+                }
             }
         },
         channels: {

@@ -94,8 +94,12 @@ const en: AppTranslations = {
                 trending: 'Trending'
             },
             newLocation: {
-                searchPlaceholder: 'Choose a place',
-                cancelButton: 'Cancel'
+                searchPlaceholder: 'Type a city name...',
+                buttons: {
+                    seePostsAtCurrentLocation: "See posts at current location",
+                    seePostsAroundHome: "See posts around home",
+                    cancel: "Cancel"
+                }
             }
         },
         channels: {
