@@ -133,11 +133,26 @@ export interface AppTranslations {
         },
         post: {
             title: string;
+            exactDistance: string; 
             comments: {
                 newCommentInputPlaceholder: string;
                 buttons: {
                     submit: string;
                 }
+            },
+            buttons: {
+                show: string;
+                cancel: string;
+                define: string;
+                delete: string;
+            },
+            alert: {
+                title: string;
+                message: string;
+            },
+            alertDelete: {
+                title: string;
+                message: string;
             },
             errors: { 
                 loadingPost: {
@@ -151,7 +166,11 @@ export interface AppTranslations {
                 votingPost:{
                     unexpected: string;
                     connection: string;
-                }
+                },
+                revealDistancePost:{
+                    unexpected: string;
+                    connection: string;
+                },
             }
         },
         profile: {
