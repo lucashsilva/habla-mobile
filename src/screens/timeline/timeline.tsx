@@ -12,7 +12,7 @@ import gql from 'graphql-tag';
 import THEME from '../../theme/theme';
 import i18n from 'i18n-js';
 import SegmentedControlTab from 'react-native-segmented-control-tab';
-import { sortPostsByPopularity, getReverseLocationFromCoords } from '../../util';
+import { sortPostsByPopularity, getReverseLocationFromCoords, getCitiesContainingString, getLocationGeocodeByPlaceId } from '../../util';
 import _ from 'lodash';
 import { SearchBar } from 'react-native-elements';
 
@@ -52,9 +52,6 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
   };
 
   currentRefreshPromise: Promise<any>;
-  showHomePosts: boolean = false;
-
-  arrayPlaces = [];
 
   constructor(props: TimelineProps) {
     super(props);
@@ -71,11 +68,8 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
       showChangeLocationModal: false,
       searchLocation: '',
       loadingMoreLocations: false,
-      listLocationsFounded: []
+      listLocationsFound: []
     };
-
-    this.arrayPlaces = ['Hong Kong', 'Bangkok', 'Londres', 'Singapura', 'Macau', 'Dubai', 'Paris', 'Nova York', 'Shenzhen', 'kuala lumpur',
-                        'Phuket', 'Roma', 'Tóquio', 'Taipei', 'Istambul', 'Seul', 'Catão', 'Praga', 'Meca', 'Miami']
 
     this.props.navigation.setParams({ changeLocationOpen: this.changeLocationOpen, loadingLocationInfo: true });
   }
@@ -148,7 +142,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
 
       if (this.currentRefreshPromise == refreshPromise) {
         this.setState({ posts, refreshing: false, errorMessage: null }, async () => {
-          if (!this.hasChannel() && !this.showHomePosts) await AsyncStorage.setItem('cached-timeline', JSON.stringify(posts));
+          if (!this.hasChannel() && this.state.currentLocation == this.state.availableLocations[0]) await AsyncStorage.setItem('cached-timeline', JSON.stringify(posts));
         });
       }
 
@@ -289,14 +283,16 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
     return local[0].city || local[0].street;
   }
 
-  changeLocation = () => {
-    this.showHomePosts = !this.showHomePosts;
+  showPostsAtHome = () => {
+    this.setState({ showChangeLocationModal: false });
 
-    if (this.showHomePosts) {
-      return this.refresh({ resetCurrentLocation: false, setLocation: this.state.availableLocations[1] });
-    } else {
-      return this.refresh({ resetCurrentLocation: false, setLocation: this.state.availableLocations[0] });
-    }
+    return this.refresh({ resetCurrentLocation: false, setLocation: this.state.availableLocations[1] });
+  }
+
+  showPostsAtCurrentLocation = () => {
+    this.setState({ showChangeLocationModal: false });
+
+    return this.refresh({ resetCurrentLocation: false, setLocation: this.state.availableLocations[0] });
   }
 
   handleSelectedIndex = (index) => {
@@ -309,21 +305,25 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
     this.setState({ showChangeLocationModal: true });
   }
 
-  changeLocationClose = () => {
-    this.setState({ showChangeLocationModal: false });
+  changeLocationClose = async(locationFromGoogle) => {
+    this.setState({ showChangeLocationModal: false, searchLocation: null, listLocationsFound: [] });
+
+    if (!locationFromGoogle) return;
+
+    let location = await getLocationGeocodeByPlaceId(locationFromGoogle.place_id);
+
+    location = location.results && location.results[0] && location.results[0].geometry && location.results[0].geometry.location && [location.results[0].geometry.location.lat, location.results[0].geometry.location.lng];
+
+    if (location) this.refresh({ resetCurrentLocation: false, setLocation: location });
   }
 
-  handleSearch = (text) => {
+  handleLocationSearch = async(text) => {
     this.setState({ searchLocation: text, loadingMoreLocations: true });
 
-    const newData = this.arrayPlaces.filter(item => {
-      const itemData = `${item.toUpperCase()}`;
-      const textData = text.toUpperCase();
-
-      return itemData.indexOf(textData) > -1;
-    });
+    let cities = await getCitiesContainingString(text);
+    
     this.setState({
-      listLocationsFounded: newData.slice(0,5)
+      listLocationsFound: cities.predictions
     });
   }
 
@@ -396,29 +396,37 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
           <View style={styles.changeLocation.modalContent}>
             <SearchBar
               placeholder={i18n.t("screens.timeline.newLocation.searchPlaceholder")}
-              onChangeText={this.handleSearch}
+              onChangeText={this.handleLocationSearch}
               autoCapitalize="none"
               value={this.state.searchLocation}
               showLoading={this.state.refreshing && !!this.state.searchLocation}
               cancelButtonTitle={null}
               platform={Platform.OS === 'ios' ? 'ios' : 'android'}
             /> 
-            {(this.state.searchLocation !== '') &&
-            <FlatList data={this.state.listLocationsFounded}
-              keyExtractor={(item) => item.toString()}
+            {(this.state.listLocationsFound.length > 0? <FlatList data={this.state.listLocationsFound}
+              keyExtractor={(item) => item.id}
               ItemSeparatorComponent={this.renderSeparator}
               renderItem={({ item }) => (
                 <TouchableOpacity
-                  onPress={this.changeLocationClose}>
+                  onPress={() => this.changeLocationClose(item)}>
                   <View>
-                    <Text style={styles.changeLocation.cityNames}>{item}</Text>
+                    <Text style={styles.changeLocation.cityNames}>{item.description}</Text>
                   </View>
                 </TouchableOpacity>
-              )}/>}
-            <TouchableOpacity onPress={this.changeLocationClose}>
-              <View style={styles.changeLocation.buttonCancel}>
-                <Text style={styles.changeLocation.cancelText}>{i18n.t("screens.timeline.newLocation.cancelButton")}</Text>
-              </View>
+            )}/>: 
+            <View>
+              {this.state.availableLocations[0] && 
+                         <TouchableOpacity onPress={this.showPostsAtCurrentLocation} style={styles.changeLocation.button}>
+                         <Text style={styles.changeLocation.buttonText}>{i18n.t("screens.timeline.newLocation.buttons.seePostsAtCurrentLocation")}</Text>
+                       </TouchableOpacity>}
+              {this.state.availableLocations[1] && 
+                          <TouchableOpacity onPress={this.showPostsAtHome} style={styles.changeLocation.button}>
+                          <Text style={styles.changeLocation.buttonText}>{i18n.t("screens.timeline.newLocation.buttons.seePostsAroundHome")}</Text>
+                        </TouchableOpacity>}
+            </View>
+            )}
+            <TouchableOpacity onPress={this.changeLocationClose} style={styles.changeLocation.button}>
+              <Text style={styles.changeLocation.buttonText}>{i18n.t("screens.timeline.newLocation.buttons.cancel")}</Text>
             </TouchableOpacity>
           </View>
         </Modal>
@@ -516,21 +524,20 @@ const styles = {
   changeLocation: StyleSheet.create({
     modalContent: {
       backgroundColor: 'white',
-      padding: 10,
       justifyContent: 'space-between',
       alignItems: 'stretch',
       borderRadius: 4,
       borderColor: THEME.colors.secondary.light,
     },
-    buttonCancel: {
+    button: {
       borderColor: THEME.colors.secondary.light,
-      padding: 12,
-      margin: 16,
+      padding: 6,
+      margin: 6,
       justifyContent: 'center',
       alignItems: 'center',
       borderRadius: 4,
     },
-    cancelText: {
+    buttonText: {
       color: THEME.colors.secondary.light,
       textAlign: 'center'
     },
@@ -555,7 +562,7 @@ interface TimelineState {
   showChangeLocationModal: boolean;
   searchLocation: string;
   loadingMoreLocations: boolean;
-  listLocationsFounded: any[];
+  listLocationsFound: any[];
 }
 
 interface TimelineProps {

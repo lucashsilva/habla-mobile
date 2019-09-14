@@ -93,7 +93,11 @@ export interface AppTranslations {
             },
             newLocation: {
                 searchPlaceholder: string;
-                cancelButton: string;
+                buttons: {
+                    seePostsAtCurrentLocation: string
+                    seePostsAroundHome: string;
+                    cancel: string;
+                }
             }
         },
         channels: {
