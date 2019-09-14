@@ -92,6 +92,14 @@ const en: AppTranslations = {
             tabs: {
                 recent: 'Recent',
                 trending: 'Trending'
+            },
+            newLocation: {
+                searchPlaceholder: 'Type a city name...',
+                buttons: {
+                    seePostsAtCurrentLocation: "See posts at current location",
+                    seePostsAroundHome: "See posts around home",
+                    cancel: "Cancel"
+                }
             }
         },
         channels: {
