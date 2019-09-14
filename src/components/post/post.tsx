@@ -10,6 +10,7 @@ import ParsedText from 'react-native-parsed-text';
 import AutoHeightImage from 'react-native-auto-height-image';
 import THEME from '../../theme/theme';
 import firebase from 'firebase';
+import { Permissions, Location } from 'expo';
 
 export default class PostComponent extends React.Component<PostComponentProps, PostComponentState> {
   
@@ -126,7 +127,8 @@ export default class PostComponent extends React.Component<PostComponentProps, P
   revealDistance = async(type: "EXACT_DISTANCE") => {
     if (!(type === "EXACT_DISTANCE")) return;
 
-    this.setState({ post: { ... this.state.post }});
+    await Permissions.askAsync(Permissions.LOCATION);
+    const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: true });
 
     try {
       const response = await client.mutate({
@@ -145,16 +147,21 @@ export default class PostComponent extends React.Component<PostComponentProps, P
               }
             }
           }
-        `)
+        `),
+        context: {
+          location: {
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude
+          },
+        }
       });
 
       this.setState({
         post: {
           ... this.state.post, 
-          exactDistance: response.revealPost.post.exactDistance,
+          exactDistance: response.data.revealPost.post.exactDistance,
         }
       });
-
     } catch (error) {
       const errorMessage = error.networkError? i18n.t('screens.post.errors.revealDistancePost.connection'):i18n.t('screens.post.errors.revealDistancePost.unexpected');
       this.setState({ errorMessage });
@@ -361,9 +368,6 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     paddingLeft: 20, 
     paddingRight: 13
-  },
-  distance:{
-    paddingRight: 11
   }
 });
 
