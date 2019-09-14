@@ -180,7 +180,7 @@ export default class PostComponent extends React.Component<PostComponentProps, P
       i18n.t('screens.post.alertDelete.message'),
       [
         {text: i18n.t('screens.post.buttons.cancel'), onPress: () => {}},
-        {text: i18n.t('screens.post.buttons.delete'), onPress: () => this.deletePost}
+        {text: i18n.t('screens.post.buttons.delete'), onPress: () => this.deletePost()}
       ],
       { cancelable: false}
     )
@@ -203,7 +203,7 @@ export default class PostComponent extends React.Component<PostComponentProps, P
           <View style={styles.postOptions}>
             { !(this.state.post.owner && this.state.post.owner.uid === firebase.auth().currentUser.uid) ?
               <TouchableOpacity style={styles.clickableArea} onPress={this.followPost}>
-                <FontAwesome name={!profileFollowPost ? "bell-o" : "bell-slash-o"} size={18}/>
+                <FontAwesome name={profileFollowPost ? "bell-o" : "bell-slash-o"} size={18}/>
               </TouchableOpacity>
             :
               <TouchableOpacity style={styles.clickableArea} onPress={this.showAlertDelete}>
@@ -241,7 +241,7 @@ export default class PostComponent extends React.Component<PostComponentProps, P
           </View>
         </View>
         <View style={styles.bottom}>
-          <TouchableOpacity style={styles.distance} disabled={this.state.post.exactDistance} onPress={this.showAlert} hitSlop={{top: 10, bottom: 10, left: 20, right: 20}}>
+          <TouchableOpacity  disabled={this.state.post.exactDistance} onPress={this.showAlert} hitSlop={{top: 10, bottom: 10, left: 20, right: 20}}>
             <Text style={styles.bottomText}>{this.state.post.exactDistance ? i18n.t('screens.post.exactDistance', { meters: `${this.state.post.exactDistance}` }) : getTranslatedDistanceFromEnum(this.state.post.distance)}</Text>
           </TouchableOpacity>
           <Text style={styles.separator}>
@@ -373,9 +373,6 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     paddingLeft: 20, 
     paddingRight: 12.5
-  },
-  distance:{
-    paddingRight: 11
   }
 });
 
