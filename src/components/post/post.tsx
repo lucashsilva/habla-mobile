@@ -10,6 +10,7 @@ import ParsedText from 'react-native-parsed-text';
 import AutoHeightImage from 'react-native-auto-height-image';
 import THEME from '../../theme/theme';
 import firebase from 'firebase';
+import { Permissions, Location } from 'expo';
 
 export default class PostComponent extends React.Component<PostComponentProps, PostComponentState> {
   
@@ -126,7 +127,8 @@ export default class PostComponent extends React.Component<PostComponentProps, P
   revealDistance = async(type: "EXACT_DISTANCE") => {
     if (!(type === "EXACT_DISTANCE")) return;
 
-    this.setState({ post: { ... this.state.post }});
+    await Permissions.askAsync(Permissions.LOCATION);
+    const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: true });
 
     try {
       const response = await client.mutate({
@@ -145,16 +147,21 @@ export default class PostComponent extends React.Component<PostComponentProps, P
               }
             }
           }
-        `)
+        `),
+        context: {
+          location: {
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude
+          },
+        }
       });
 
       this.setState({
         post: {
           ... this.state.post, 
-          exactDistance: response.revealPost.post.exactDistance,
+          exactDistance: response.data.revealPost.post.exactDistance,
         }
       });
-
     } catch (error) {
       const errorMessage = error.networkError? i18n.t('screens.post.errors.revealDistancePost.connection'):i18n.t('screens.post.errors.revealDistancePost.unexpected');
       this.setState({ errorMessage });
@@ -184,6 +191,18 @@ export default class PostComponent extends React.Component<PostComponentProps, P
     )
   }
   
+  showAlertDelete = () => {
+    Alert.alert(
+      i18n.t('screens.post.alertDelete.title'),
+      i18n.t('screens.post.alertDelete.message'),
+      [
+        {text: i18n.t('screens.post.buttons.cancel'), onPress: () => {}},
+        {text: i18n.t('screens.post.buttons.delete'), onPress: () => this.deletePost()}
+      ],
+      { cancelable: false}
+    )
+  }
+
   render() {
       const vote = this.state.post.profilePostVote && this.state.post.profilePostVote.type;
       const photoDefault = require('../../../assets/avatar-placeholder.png');
@@ -201,10 +220,10 @@ export default class PostComponent extends React.Component<PostComponentProps, P
           <View style={styles.postOptions}>
             { !(this.state.post.owner && this.state.post.owner.uid === firebase.auth().currentUser.uid) ?
               <TouchableOpacity style={styles.clickableArea} onPress={this.followPost}>
-                <FontAwesome name={!profileFollowPost ? "bell-o" : "bell-slash-o"} size={20}/>
+                <FontAwesome name={profileFollowPost ? "bell-o" : "bell-slash-o"} size={18}/>
               </TouchableOpacity>
             :
-              <TouchableOpacity style={styles.clickableArea} onPress={this.deletePost}>
+              <TouchableOpacity style={styles.clickableArea} onPress={this.showAlertDelete}>
                 <FontAwesome name="trash-o" size={20}/>
               </TouchableOpacity>
             } 
@@ -239,7 +258,7 @@ export default class PostComponent extends React.Component<PostComponentProps, P
           </View>
         </View>
         <View style={styles.bottom}>
-          <TouchableOpacity style={styles.distance} disabled={this.state.post.exactDistance} onPress={this.showAlert} hitSlop={{top: 10, bottom: 10, left: 20, right: 20}}>
+          <TouchableOpacity style={styles.distance} disabled={!!this.state.post.exactDistance} onPress={this.showAlert} hitSlop={{top: 10, bottom: 10, left: 20, right: 20}}>
             <Text style={styles.bottomText}>{this.state.post.exactDistance ? i18n.t('screens.post.exactDistance', { meters: `${this.state.post.exactDistance}` }) : getTranslatedDistanceFromEnum(this.state.post.distance)}</Text>
           </TouchableOpacity>
           <Text style={styles.separator}>
@@ -341,7 +360,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     justifyContent: 'center',
     paddingVertical: 10,
-    marginTop: -5
+    marginTop: -5,
   },
   voteButton: {
     fontSize: 25,
@@ -366,13 +385,12 @@ const styles = StyleSheet.create({
   hashTag: {
     color: THEME.colors.primary.default
   },
-  clickableArea:{
+   clickableArea:{
     paddingTop: 15,
     paddingBottom: 10,
     paddingLeft: 20, 
-    paddingRight: 13
-  },
-
+    paddingRight: 12.5
+  }
 });
 
 export interface PostComponentProps {

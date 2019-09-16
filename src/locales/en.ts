@@ -92,6 +92,14 @@ const en: AppTranslations = {
             tabs: {
                 recent: 'Recent',
                 trending: 'Trending'
+            },
+            newLocation: {
+                searchPlaceholder: 'Type a city name...',
+                buttons: {
+                    seePostsAtCurrentLocation: "See posts at current location",
+                    seePostsAroundHome: "See posts around home",
+                    cancel: "Cancel"
+                }
             }
         },
         channels: {
@@ -144,11 +152,16 @@ const en: AppTranslations = {
             buttons: {
                 show: 'Show',
                 cancel: 'Cancel',
-                define: 'Define'
+                define: 'Define',
+                delete: 'Delete'
             },
             alert: {
                 title: 'Reveal exact location of this post?',
                 message: 'This will cost 10 points.'
+            },
+            alertDelete: {
+                title: 'Delete post',
+                message: "This action cannot be undone. Do you want to proceed?"
             },
             errors: {
                 loadingPost: {

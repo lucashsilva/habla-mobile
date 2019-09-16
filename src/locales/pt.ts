@@ -91,6 +91,14 @@ const pt: AppTranslations = {
             tabs: {
                 recent: 'Recente',
                 trending: 'Em alta'
+            },
+            newLocation: {
+                searchPlaceholder: 'Escreva o nome de uma cidade...',
+                buttons: {
+                    seePostsAtCurrentLocation: "Ver posts na localização atual",
+                    seePostsAroundHome: "Ver posts perto de casa",
+                    cancel: "Cancelar"
+                }
             }
         },
         channels: {
@@ -143,11 +151,16 @@ const pt: AppTranslations = {
             buttons: {
                 show: 'Mostrar',
                 cancel: 'Cancelar',
-                define: 'Definir'
+                define: 'Definir',
+                delete: 'Deletar'
             },
             alert: {
                 title: 'Revelar a localização exata desse post?',
                 message: 'Isso irá custar 10 pontos.'
+            },
+            alertDelete: {
+                title: 'Deletar post?',
+                message: 'Esta ação não pode ser desfeita. Deseja prosseguir?'
             },
             errors: {
                 loadingPost: {
