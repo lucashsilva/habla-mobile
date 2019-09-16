@@ -151,11 +151,16 @@ const pt: AppTranslations = {
             buttons: {
                 show: 'Mostrar',
                 cancel: 'Cancelar',
-                define: 'Definir'
+                define: 'Definir',
+                delete: 'Deletar'
             },
             alert: {
                 title: 'Revelar a localização exata desse post?',
                 message: 'Isso irá custar 10 pontos.'
+            },
+            alertDelete: {
+                title: 'Deletar post?',
+                message: 'Esta ação não pode ser desfeita. Deseja prosseguir?'
             },
             errors: {
                 loadingPost: {
