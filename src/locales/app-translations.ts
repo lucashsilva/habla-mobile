@@ -176,6 +176,7 @@ export interface AppTranslations {
                     connection: string;
                 },
                 revealDistancePost:{
+                    title: string;
                     unexpected: string;
                     connection: string;
                 },

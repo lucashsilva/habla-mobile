@@ -176,6 +176,7 @@ const pt: AppTranslations = {
                     connection: 'Houve um erro de conexão ao votar no post. Verifique se está conectado à internet.'
                 },
                 revealDistancePost:{
+                    title: "Erro ao revelar informação do post",
                     unexpected: 'Pontos insuficientes para revelar distância exata.',
                     connection: 'Houve um erro de conexão ao votar no post. Verifique se está conectado à internet.'
                 }

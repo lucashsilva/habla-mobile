@@ -177,6 +177,7 @@ const en: AppTranslations = {
                     connection: 'There was a problem voting the post. Please check your connection.'
                 },
                 revealDistancePost:{
+                    title:'Error revealing post information',
                     unexpected: 'Insufficient score to reveal post information.',
                     connection: 'There was a problem voting the post. Please check your connection.'
                 }
