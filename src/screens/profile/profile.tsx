@@ -292,7 +292,8 @@ const styles = {
       fontSize: 15
     },
     premiumBadge: { 
-      marginTop: 3
+      marginTop: 3,
+      flexDirection: 'row'
     }
   })
 };
