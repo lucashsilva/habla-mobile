@@ -91,6 +91,14 @@ const pt: AppTranslations = {
             tabs: {
                 recent: 'Recente',
                 trending: 'Em alta'
+            },
+            newLocation: {
+                searchPlaceholder: 'Escreva o nome de uma cidade...',
+                buttons: {
+                    seePostsAtCurrentLocation: "Ver posts na localização atual",
+                    seePostsAroundHome: "Ver posts perto de casa",
+                    cancel: "Cancelar"
+                }
             }
         },
         channels: {
@@ -168,6 +176,7 @@ const pt: AppTranslations = {
                     connection: 'Houve um erro de conexão ao votar no post. Verifique se está conectado à internet.'
                 },
                 revealDistancePost:{
+                    title: "Erro ao revelar informação do post",
                     unexpected: 'Pontos insuficientes para revelar distância exata.',
                     connection: 'Houve um erro de conexão ao votar no post. Verifique se está conectado à internet.'
                 }

@@ -92,6 +92,14 @@ const en: AppTranslations = {
             tabs: {
                 recent: 'Recent',
                 trending: 'Trending'
+            },
+            newLocation: {
+                searchPlaceholder: 'Type a city name...',
+                buttons: {
+                    seePostsAtCurrentLocation: "See posts at current location",
+                    seePostsAroundHome: "See posts around home",
+                    cancel: "Cancel"
+                }
             }
         },
         channels: {
@@ -169,6 +177,7 @@ const en: AppTranslations = {
                     connection: 'There was a problem voting the post. Please check your connection.'
                 },
                 revealDistancePost:{
+                    title:'Error revealing post information',
                     unexpected: 'Insufficient score to reveal post information.',
                     connection: 'There was a problem voting the post. Please check your connection.'
                 }

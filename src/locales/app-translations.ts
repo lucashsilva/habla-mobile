@@ -90,6 +90,14 @@ export interface AppTranslations {
             tabs: {
                 recent: string;
                 trending: string;
+            },
+            newLocation: {
+                searchPlaceholder: string;
+                buttons: {
+                    seePostsAtCurrentLocation: string
+                    seePostsAroundHome: string;
+                    cancel: string;
+                }
             }
         },
         channels: {
@@ -168,6 +176,7 @@ export interface AppTranslations {
                     connection: string;
                 },
                 revealDistancePost:{
+                    title: string;
                     unexpected: string;
                     connection: string;
                 },

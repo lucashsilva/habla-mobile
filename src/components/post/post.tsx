@@ -10,6 +10,7 @@ import ParsedText from 'react-native-parsed-text';
 import AutoHeightImage from 'react-native-auto-height-image';
 import THEME from '../../theme/theme';
 import firebase from 'firebase';
+import { Permissions, Location } from 'expo';
 
 export default class PostComponent extends React.Component<PostComponentProps, PostComponentState> {
   
@@ -126,7 +127,8 @@ export default class PostComponent extends React.Component<PostComponentProps, P
   revealDistance = async(type: "EXACT_DISTANCE") => {
     if (!(type === "EXACT_DISTANCE")) return;
 
-    this.setState({ post: { ... this.state.post }});
+    await Permissions.askAsync(Permissions.LOCATION);
+    const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: true });
 
     try {
       const response = await client.mutate({
@@ -145,21 +147,35 @@ export default class PostComponent extends React.Component<PostComponentProps, P
               }
             }
           }
-        `)
+        `),
+        context: {
+          location: {
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude
+          },
+        }
       });
 
       this.setState({
         post: {
           ... this.state.post, 
-          exactDistance: response.revealPost.post.exactDistance,
+          exactDistance: response.data.revealPost.post.exactDistance,
         }
       });
-
     } catch (error) {
       const errorMessage = error.networkError? i18n.t('screens.post.errors.revealDistancePost.connection'):i18n.t('screens.post.errors.revealDistancePost.unexpected');
       this.setState({ errorMessage });
+      this.showAlertError(errorMessage);
       console.log(error);
+      
     } 
+  }
+
+  showAlertError = (text) => {
+    Alert.alert(
+      i18n.t('screens.post.errors.revealDistancePost.title'),
+      text,
+    )
   }
 
   showAlert = () => {
@@ -241,7 +257,11 @@ export default class PostComponent extends React.Component<PostComponentProps, P
           </View>
         </View>
         <View style={styles.bottom}>
+<<<<<<< HEAD
           <TouchableOpacity  disabled={this.state.post.exactDistance} onPress={this.showAlert} hitSlop={{top: 10, bottom: 10, left: 20, right: 20}}>
+=======
+          <TouchableOpacity style={styles.distance} disabled={!!this.state.post.exactDistance} onPress={this.showAlert} hitSlop={{top: 10, bottom: 10, left: 20, right: 20}}>
+>>>>>>> df403e4c9416df8944128c5fdd27b444282cb9e6
             <Text style={styles.bottomText}>{this.state.post.exactDistance ? i18n.t('screens.post.exactDistance', { meters: `${this.state.post.exactDistance}` }) : getTranslatedDistanceFromEnum(this.state.post.distance)}</Text>
           </TouchableOpacity>
           <Text style={styles.separator}>
@@ -368,7 +388,7 @@ const styles = StyleSheet.create({
   hashTag: {
     color: THEME.colors.primary.default
   },
-  clickableArea:{
+   clickableArea:{
     paddingTop: 15,
     paddingBottom: 10,
     paddingLeft: 20, 
