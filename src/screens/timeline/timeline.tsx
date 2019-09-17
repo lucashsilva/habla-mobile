@@ -373,7 +373,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
               activeTabStyle={styles.page.activeTabStyle}
               tabTextStyle={styles.page.tabTextStyle}
             />}
-            ListFooterComponent={!this.state.refreshing && this.state.posts && this.state.posts.length === 0 && <Text style={styles.page.noPosts}>There's nothing here yet. Be the first to create a post!</Text>}
+            ListFooterComponent={!this.state.refreshing && this.state.posts && this.state.posts.length === 0 && <Text style={styles.page.noPosts}>{i18n.t("screens.timeline.empty")}</Text>}
             renderItem={({ item }) => (
               <TouchableOpacity onPress={() => this.openPost(item)}>
                 <PostComponent post={item}

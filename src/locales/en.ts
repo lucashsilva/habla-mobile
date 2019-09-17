@@ -83,6 +83,7 @@ const en: AppTranslations = {
         },
         timeline: {
             title: 'Timeline',
+            empty: "There's nothing here yet. Be the first to create a post!",
             errors: {
                 fetchingPosts: {
                     unexpected: 'An unexpected error occurred while loading the posts.',

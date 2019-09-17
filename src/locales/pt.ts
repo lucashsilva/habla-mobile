@@ -82,6 +82,7 @@ const pt: AppTranslations = {
         },
         timeline: {
             title: 'Linha do tempo',
+            empty: "Não há nada aqui ainda. Seja o primeiro a criar um post!",
             errors: {
                 fetchingPosts: {
                     unexpected: 'Um erro inesperado ocorreu ao carregar os posts.',

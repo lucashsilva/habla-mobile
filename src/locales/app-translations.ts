@@ -81,6 +81,7 @@ export interface AppTranslations {
         },
         timeline: {
             title: string;
+            empty: string;
             errors: { 
                 fetchingPosts: {
                     unexpected: string;
