@@ -167,7 +167,7 @@ export default class PostComponent extends React.Component<PostComponentProps, P
       this.setState({ errorMessage });
       this.showAlertError(errorMessage);
       console.log(error);
-      
+
     } 
   }
 
@@ -257,11 +257,8 @@ export default class PostComponent extends React.Component<PostComponentProps, P
           </View>
         </View>
         <View style={styles.bottom}>
-<<<<<<< HEAD
-          <TouchableOpacity  disabled={this.state.post.exactDistance} onPress={this.showAlert} hitSlop={{top: 10, bottom: 10, left: 20, right: 20}}>
-=======
-          <TouchableOpacity style={styles.distance} disabled={!!this.state.post.exactDistance} onPress={this.showAlert} hitSlop={{top: 10, bottom: 10, left: 20, right: 20}}>
->>>>>>> df403e4c9416df8944128c5fdd27b444282cb9e6
+
+          <TouchableOpacity  disabled={!!this.state.post.exactDistance} onPress={this.showAlert} hitSlop={{top: 10, bottom: 10, left: 20, right: 20}}>
             <Text style={styles.bottomText}>{this.state.post.exactDistance ? i18n.t('screens.post.exactDistance', { meters: `${this.state.post.exactDistance}` }) : getTranslatedDistanceFromEnum(this.state.post.distance)}</Text>
           </TouchableOpacity>
           <Text style={styles.separator}>
