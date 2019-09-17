@@ -165,7 +165,7 @@ export default class PostComponent extends React.Component<PostComponentProps, P
     } catch (error) {
       const errorMessage = error.networkError? i18n.t('screens.post.errors.revealDistancePost.connection'):i18n.t('screens.post.errors.revealDistancePost.unexpected');
       this.setState({ errorMessage });
-      error.networkError ? this.showAlertError(errorMessage) : this.showAlertError(errorMessage);
+      this.showAlertError(errorMessage);
     
       console.log(error);
 
