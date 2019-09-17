@@ -94,6 +94,7 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
               phone
               gender
               home
+              premium
             }
           }
         `),

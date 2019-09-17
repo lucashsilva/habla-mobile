@@ -73,7 +73,7 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
               score
               scoreBalance
               home
-
+              premium
               posts {
                 id
                 body
@@ -190,7 +190,13 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
                   {this.state.profile.bio && <Text style={styles.profileInfo.bio}>{this.state.profile.bio}</Text>}
                   {this.state.profile.website && <Text>{this.state.profile.website}</Text>}
 
-                  <View style={styles.profileInfo.score}>
+                  {this.state.profile.premium? 
+                   <Badge
+                   status='success'
+                   value="PREMIUM"
+                   containerStyle={styles.profileInfo.premiumBadge}
+                 />:
+                 <View style={styles.profileInfo.score}>
                     <View style={styles.profileInfo.scoreInfo}>
                       <Badge
                         status='success'
@@ -205,7 +211,7 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
                         containerStyle={styles.profileInfo.scoreBadge}
                       />
                     </View>}
-                  </View>
+                  </View>}
                 </View>
               </View>
             </View>) : null}
@@ -284,6 +290,9 @@ const styles = {
     },
     scoreText: {
       fontSize: 15
+    },
+    premiumBadge: { 
+      marginTop: 3
     }
   })
 };
