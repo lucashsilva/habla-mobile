@@ -257,7 +257,6 @@ export default class PostComponent extends React.Component<PostComponentProps, P
           </View>
         </View>
         <View style={styles.bottom}>
-
           <TouchableOpacity  disabled={!!this.state.post.exactDistance} onPress={this.showAlert} hitSlop={{top: 10, bottom: 10, left: 20, right: 20}}>
             <Text style={styles.bottomText}>{this.state.post.exactDistance ? i18n.t('screens.post.exactDistance', { meters: `${this.state.post.exactDistance}` }) : getTranslatedDistanceFromEnum(this.state.post.distance)}</Text>
           </TouchableOpacity>
