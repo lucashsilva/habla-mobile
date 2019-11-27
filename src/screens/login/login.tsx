@@ -2,7 +2,7 @@ import * as React from "react";
 import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet, TextInput } from "react-native";
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import firebase from 'firebase';
-import { Facebook } from "expo";
+import * as Facebook from "expo-facebook";
 import { FontAwesome } from '@expo/vector-icons';
 import THEME from "../../theme/theme";
 import i18n from 'i18n-js';

@@ -1,12 +1,13 @@
 import * as React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, ActivityIndicator, StatusBar, Dimensions } from 'react-native';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
-import { Permissions, Location } from 'expo';
+import * as Permissions from 'expo-permissions';
 import { client } from '../../services/client';
 import gql from 'graphql-tag';
 import THEME from '../../theme/theme';
 import i18n from 'i18n-js';
 import { CheckBox } from 'react-native-elements';
+import * as Location from "expo-location";
 
 import ChangePhotoComponent from '../../components/change-photo/change-photo'
 import AutoHeightImage from 'react-native-auto-height-image';

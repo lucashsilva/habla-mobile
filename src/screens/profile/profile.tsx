@@ -8,7 +8,8 @@ import gql from 'graphql-tag';
 import THEME from '../../theme/theme';
 import PostComponent from '../../components/post/post';
 import i18n from 'i18n-js';
-import { Permissions, Location } from 'expo';
+import * as Permissions from 'expo-permissions';
+import * as Location from "expo-location";
 import _ from 'lodash';
 
 export default class ProfileScreen extends React.Component<ProfileScreenProps, ProfileScreenState> {

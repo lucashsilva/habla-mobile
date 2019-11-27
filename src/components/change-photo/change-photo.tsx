@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { Platform } from 'expo-core';
-import { Permissions } from 'expo';
-import { ImagePicker } from 'expo';
-import { FileSystem } from 'expo';
+import { Platform } from 'react-native';
+import * as Permissions from 'expo-permissions';
+import * as FileSystem from 'expo-file-system';
+import * as ImagePicker from 'expo-image-picker';
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import ActionSheet from 'react-native-actionsheet'
 import i18n from 'i18n-js';

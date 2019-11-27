@@ -4,10 +4,13 @@ import { client } from "../../services/client";
 import gql from "graphql-tag";
 import { AsyncStorage, Text, View, StyleSheet, ActivityIndicator, TouchableOpacity, AppState, StatusBar } from "react-native";
 import THEME from "../../theme/theme";
-import { Location, Linking, Permissions, Notifications } from 'expo';
+import { Linking, Notifications } from 'expo';
+import * as Permissions from 'expo-permissions';
 import { Ionicons } from '@expo/vector-icons';
 import i18n from 'i18n-js';
 import { getReverseLocationFromCoords } from "../../util";
+import * as Location from "expo-location";
+
 export default class AppLoadingScreen extends React.Component<any, AppLoadingState> {
   _notificationsSubscription;
 
@@ -79,7 +82,7 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
       location = location[0];
     }
 
-    await AsyncStorage.setItem('last-location', JSON.stringify(location));
+    location && await AsyncStorage.setItem('last-location', JSON.stringify(location));
 
     this.setState({ location: location });
   }
@@ -94,14 +97,10 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
         
         let profile = storedProfile? JSON.parse(await AsyncStorage.getItem('cached-profile')): null;
 
-        if (profile) {
-          await this.handleSuccessProfileFetch(profile);
-        }
-
+        profile && await this.handleSuccessProfileFetch(profile);
+        
         try {
           profile = await this.fetchProfile(user);
-
-          await this.handleSuccessProfileFetch(profile);
         } catch (error) {
           if (error.graphQLErrors.find(e => e.code === 'NOT_FOUND_ERROR')) {
             this.props.navigation.navigate('ProfileCreationScreen', {
@@ -114,6 +113,8 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
             await AsyncStorage.removeItem('cached-profile');
           }
         }
+
+        profile && await this.handleSuccessProfileFetch(profile);
       } else {
         this.props.navigation.navigate('LoginScreen');
         await AsyncStorage.removeItem('cached-profile');
@@ -122,37 +123,32 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
   }
 
   fetchProfile = async (firebaseUser) => {
-    try {
-      const response = await client.query({
-        query: gql(`
-          {
-            profile(uid: "${firebaseUser.uid}") {
-              uid
-              name
-              username
-              bio
-              website
-              phone
-              gender
-              home
-            }
+    const response = await client.query({
+      query: gql(`
+        {
+          profile(uid: "${firebaseUser.uid}") {
+            uid
+            name
+            username
+            bio
+            website
+            phone
+            gender
+            home
           }
-        `),
-        fetchPolicy: 'no-cache'
-      });
-      
-      const profile = (response.data as any).profile;
+        }
+      `),
+      fetchPolicy: 'no-cache'
+    });
+    
+    const profile = (response.data as any).profile;
 
-      return profile;
-
-    } catch (error) {
-      const errorMessage = error.networkError ? i18n.t('screens.appLoading.errors.fetchingProfile.connection') : i18n.t('screens.appLoading.errors.fetchingProfile.unexpected');
-      this.setState({ errorMessage, loading: false });
-      console.log(error);
-    }
+    return profile;
   }
   
   handleSuccessProfileFetch = async(profile) => {
+    if (!profile) return;
+    
     await AsyncStorage.setItem('cached-profile', JSON.stringify(profile));
     this.props.navigation.navigate('TabsNavigator');
 
@@ -206,7 +202,6 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
       }
 
       this._notificationsSubscription = Notifications.addListener(this.handleNotification);
-
     } catch (error) {
       if (error.graphQLErrors.find(e => e.code == 'INTERNAL_SERVER_ERROR')) {
         const errorMessage = i18n.t('screens.appLoading.errors.updateExpoPushToken.internalServerError');

@@ -1,12 +1,13 @@
 import * as React from 'react';
 import { FlatList, View, StyleSheet, TouchableOpacity, RefreshControl, StatusBar, Text, AsyncStorage, Button, TouchableHighlight, ActivityIndicator } from 'react-native';
 import PostComponent from '../../components/post/post';
-import { Platform } from 'expo-core';
+import { Platform } from 'react-native';
 import ActionButton from 'react-native-action-button';
 import { FontAwesome, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import Modal from "react-native-modal";
 import NewPostScreen from '../new-post/new-post';
-import { Location, Permissions } from 'expo';
+import * as Permissions from 'expo-permissions';
+import * as Location from "expo-location";
 import { client } from '../../services/client';
 import gql from 'graphql-tag';
 import THEME from '../../theme/theme';

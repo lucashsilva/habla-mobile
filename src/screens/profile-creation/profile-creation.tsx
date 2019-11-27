@@ -72,7 +72,7 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
     const photoDefault = require('../../../assets/avatar-placeholder.png');
 
     return (
-      <SafeAreaView>
+      <SafeAreaView style={styles.AndroidSafeArea}> 
         <StatusBar barStyle="dark-content" />
         {this.state.errorMessage &&
           <View style={styles.page.error.errorView}>
@@ -277,5 +277,8 @@ const styles = {
         width: Dimensions.get('screen').width - 150
       }
     })
+  },
+  AndroidSafeArea: {
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0
   }
 };

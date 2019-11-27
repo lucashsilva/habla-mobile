@@ -4,9 +4,10 @@ import { client } from '../../services/client';
 import gql from 'graphql-tag';
 import THEME from '../../theme/theme';
 import i18n from 'i18n-js';
-import { Location, Permissions } from 'expo';
+import * as Permissions from 'expo-permissions';
 import { SearchBar } from 'react-native-elements';
 import { Ionicons } from '@expo/vector-icons';
+import * as Location from "expo-location";
 
 export default class ChannelsScreen extends React.Component<ChannelsScreenProps, ChannelsScreenState> {
   static navigationOptions = ({ navigation }) => {

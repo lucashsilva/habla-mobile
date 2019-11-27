@@ -15,7 +15,7 @@ import NotificationsScreen from './src/screens/notifications/notifications';
 import i18n from 'i18n-js';
 import moment from 'moment';
 import 'moment/min/locales';
-import { Localization } from 'expo';
+import * as Localization from 'expo-localization';
 
 // languages
 import en from './src/locales/en';

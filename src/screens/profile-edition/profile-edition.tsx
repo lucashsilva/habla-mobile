@@ -6,7 +6,8 @@ import gql from "graphql-tag";
 import i18n from 'i18n-js';
 import ChangePhotoComponent from '../../components/change-photo/change-photo'
 import KeyboardSpacer from 'react-native-keyboard-spacer';
-import { Permissions, Location } from 'expo';
+import * as Permissions from 'expo-permissions';
+import * as Location from "expo-location";
 import { getTranslatedGenderFromEnum, getReverseLocationFromCoords } from "../../util";
 import { Ionicons } from '@expo/vector-icons';
 
@@ -162,7 +163,7 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
     const photoDefault = require('../../../assets/avatar-placeholder.png');
 
     return (
-      <SafeAreaView>
+      <SafeAreaView style={styles.AndroidSafeArea}> 
         <StatusBar barStyle="light-content"/>
         {this.state.errorMessage &&
           <View style={styles.page.header.errorView}>
@@ -343,5 +344,8 @@ const styles = {
         paddingVertical: 10
       }
     })
+  },
+  AndroidSafeArea: {
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0
   }
 }

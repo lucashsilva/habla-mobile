@@ -1,6 +1,6 @@
 import i18n from 'i18n-js';
 import _ from 'lodash';
-import { Localization } from 'expo';
+import * as Localization from 'expo-localization';
 const geoConfig = require('../../geocoding.json');
 
 const getTranslatedDistanceFromEnum = (distance) => {
@@ -19,6 +19,11 @@ const sortPostsByPopularity = (posts: Array<any>) => {
 
 const getReverseLocationFromCoords = async({ latitude, longitude }) => {
     let response: any = await (await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&sensor=true&key=${geoConfig.apiKey}`)).json();
+    
+    if (response.status !== "OK") {
+        throw new Error(response.error_message);
+    }
+    
     let result = response.results.filter(r => r.types.includes("locality") && !!r.address_components.find(ac => ac.types.includes("locality") && ac.types.includes("political")))
                                  .reduce((prev, curr) => {
                                     prev.push(...curr.address_components);
@@ -41,11 +46,19 @@ const getCitiesContainingString = async(string) => {
 
     let response: any = await (await fetch(`https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${string}&types=(regions)&language=${localization.locale}&key=${geoConfig.apiKey}`)).json();
 
+    if (response.status !== "OK") {
+        throw new Error(response.error_message);
+    }
+    
     return response;
 }
 
 const getLocationGeocodeByPlaceId = async(placeId) => {
     let response: any = await (await fetch(`https://maps.googleapis.com/maps/api/geocode/json?place_id=${placeId}&sensor=false&key=${geoConfig.apiKey}`)).json();
+
+    if (response.status !== "OK") {
+        throw new Error(response.error_message);
+    }
 
     return response;
 }

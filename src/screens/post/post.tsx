@@ -5,7 +5,7 @@ import PostComponent from '../../components/post/post';
 import moment from 'moment';
 import { client } from '../../services/client';
 import gql from 'graphql-tag';
-import { Location } from 'expo';
+import * as Location from "expo-location";
 import THEME from '../../theme/theme';
 import i18n from 'i18n-js';
 import { getTranslatedDistanceFromEnum } from '../../util';

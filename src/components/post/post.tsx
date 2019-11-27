@@ -10,7 +10,8 @@ import ParsedText from 'react-native-parsed-text';
 import AutoHeightImage from 'react-native-auto-height-image';
 import THEME from '../../theme/theme';
 import firebase from 'firebase';
-import { Permissions, Location } from 'expo';
+import * as Permissions from 'expo-permissions';
+import * as Location from "expo-location";
 
 export default class PostComponent extends React.Component<PostComponentProps, PostComponentState> {
   
@@ -208,82 +209,82 @@ export default class PostComponent extends React.Component<PostComponentProps, P
       const { profileFollowPost } = this.state.post;
       
       return (
-       
-      <View style={styles.container}>
-      { this.props.showPostHeader? 
-        (<View style={styles.header}>
-          <TouchableOpacity style={styles.avatar} disabled={ !this.state.post.owner } onPress={() => this.props.onOpenProfile && this.props.onOpenProfile(this.state.post.owner)}> 
-            <Image style={styles.avatarIconImage as any} source={!this.state.post.anonymous && this.state.post.owner && this.state.post.owner.photoURL? { uri: this.state.post.owner.photoURL }: photoDefault} width={40} height={40}/>
-            {this.state.post.anonymous? <Text style={styles.headerText}>{ i18n.t('global.user.anonymousLabel')}</Text>: <Text style={styles.headerText}>{ this.state.post.owner.username }</Text>}
-          </TouchableOpacity>
-          <View style={styles.postOptions}>
-            { !(this.state.post.owner && this.state.post.owner.uid === firebase.auth().currentUser.uid) ?
-              <TouchableOpacity style={styles.clickableArea} onPress={this.followPost}>
-                <FontAwesome name={profileFollowPost ? "bell-o" : "bell-slash-o"} size={18}/>
-              </TouchableOpacity>
-            :
-              <TouchableOpacity style={styles.clickableArea} onPress={this.showAlertDelete}>
-                <FontAwesome name="trash-o" size={20}/>
-              </TouchableOpacity>
-            } 
-          </View>
-        </View>)
-      : null }
-        <View style={styles.postBody}>
-          <View style={styles.postLeft}>
-            <View style={styles.middle}>
-              <ParsedText style={styles.bodyText}
-                          parse={ 
-                            [
-                              {pattern: /#(\w+)/, style: styles.hashTag, onPress:(name,matchIndex)=> this.props.onOpenChannel && this.props.onOpenChannel(this.handleHashTagPress(name,matchIndex))}, 
-                            ]
-                          }
-                          childrenProps={{allowFontScaling: false}}
-              >{ this.state.post.body }
-              </ParsedText>
-            </View>
-            {this.state.post.photoURL && <AutoHeightImage width={Dimensions.get('window').width - 80} source={{ uri: this.state.post.photoURL}}/>}
-          </View>
-          <View style={styles.postRight}>
-            <TouchableOpacity disabled={vote === "UP"} onPress={() => this.vote("UP")}>
-              <FontAwesome style={styles.voteButton} name="chevron-up" color={vote === "UP"? "#777": null}/>
+        <View style={styles.container}>
+        { this.props.showPostHeader? 
+          (<View style={styles.header}>
+            <TouchableOpacity style={styles.avatar} disabled={ !this.state.post.owner } onPress={() => this.props.onOpenProfile && this.props.onOpenProfile(this.state.post.owner)}> 
+              <Image style={styles.avatarIconImage as any} source={!this.state.post.anonymous && this.state.post.owner && this.state.post.owner.photoURL? { uri: this.state.post.owner.photoURL }: photoDefault} width={40} height={40}/>
+              {this.state.post.anonymous? <Text style={styles.headerText}>{ i18n.t('global.user.anonymousLabel')}</Text>: <Text style={styles.headerText}>{ this.state.post.owner.username }</Text>}
             </TouchableOpacity>
-            <Text style={styles.postRate}>
-              { this.state.post.rate || 0 }
-            </Text>
-            <TouchableOpacity disabled={vote === "DOWN"} onPress={() => this.vote("DOWN")}>
-              <FontAwesome style={styles.voteButton} name="chevron-down" color={vote === "DOWN"? "#777": null}/>
-            </TouchableOpacity> 
+            <View style={styles.postOptions}>
+              { !(this.state.post.owner && this.state.post.owner.uid === firebase.auth().currentUser.uid) ?
+                <TouchableOpacity style={styles.clickableArea} onPress={this.followPost}>
+                  <FontAwesome name={profileFollowPost ? "bell-o" : "bell-slash-o"} size={18}/>
+                </TouchableOpacity>
+              :
+                <TouchableOpacity style={styles.clickableArea} onPress={this.showAlertDelete}>
+                  <FontAwesome name="trash-o" size={20}/>
+                </TouchableOpacity>
+              } 
+            </View>
+          </View>)
+        : null }
+          <View style={styles.postBody}>
+            <View style={styles.postLeft}>
+              <View style={styles.middle}>
+                <ParsedText style={styles.bodyText}
+                            parse={ 
+                              [
+                                {pattern: /#(\w+)/, style: styles.hashTag, onPress:(name,matchIndex)=> this.props.onOpenChannel && this.props.onOpenChannel(this.handleHashTagPress(name,matchIndex))}, 
+                              ]
+                            }
+                            childrenProps={{allowFontScaling: false}}
+                >{ this.state.post.body }
+                </ParsedText>
+              </View>
+              {this.state.post.photoURL && <AutoHeightImage width={Dimensions.get('window').width - 80} source={{ uri: this.state.post.photoURL}}/>}
+            </View>
+            <View style={styles.postRight}>
+              <TouchableOpacity disabled={vote === "UP"} onPress={() => this.vote("UP")}>
+                <FontAwesome style={styles.voteButton} name="chevron-up" color={vote === "UP"? "#777": null}/>
+              </TouchableOpacity>
+              <Text style={styles.postRate}>
+                { this.state.post.rate || 0 }
+              </Text>
+              <TouchableOpacity disabled={vote === "DOWN"} onPress={() => this.vote("DOWN")}>
+                <FontAwesome style={styles.voteButton} name="chevron-down" color={vote === "DOWN"? "#777": null}/>
+              </TouchableOpacity> 
+            </View>
           </View>
-        </View>
-        <View style={styles.bottom}>
-          <TouchableOpacity  disabled={!!this.state.post.exactDistance} onPress={this.showAlert} hitSlop={{top: 10, bottom: 10, left: 20, right: 20}}>
-            <Text style={styles.bottomText}>{this.state.post.exactDistance ? i18n.t('screens.post.exactDistance', { meters: `${this.state.post.exactDistance}` }) : getTranslatedDistanceFromEnum(this.state.post.distance)}</Text>
-          </TouchableOpacity>
-          <Text style={styles.separator}>
-            •
-          </Text>
-          <Text style={styles.bottomText}>{ moment(this.state.post.createdAt).fromNow() }</Text>
-          {this.state.post.channel? 
-          (<View style={styles.footerItem}>
+          <View style={styles.bottom}>
+            <TouchableOpacity  disabled={!!this.state.post.exactDistance} onPress={this.showAlert} hitSlop={{top: 10, bottom: 10, left: 20, right: 20}}>
+              <Text style={styles.bottomText}>{this.state.post.exactDistance ? i18n.t('screens.post.exactDistance', { meters: `${this.state.post.exactDistance}` }) : getTranslatedDistanceFromEnum(this.state.post.distance)}</Text>
+            </TouchableOpacity>
             <Text style={styles.separator}>
               •
             </Text>
-            <TouchableOpacity onPress={() => this.props.onOpenChannel && this.props.onOpenChannel(this.state.post.channel)}>
-              <Text style={styles.channelTitle}>#{ this.state.post.channel.name } </Text>
-            </TouchableOpacity>
-          </View>): (null)}
-          <Text style={styles.separator}>
-            •
-          </Text>
-          <View style={styles.footerItem}>
-            <FontAwesome style={styles.footerItemIcon} name="comments"/>
-            <Text style={styles.bottomText}>
-              { this.state.post.commentsCount }
+            <Text style={styles.bottomText}>{ moment(this.state.post.createdAt).fromNow() }</Text>
+            {this.state.post.channel? 
+            (<View style={styles.footerItem}>
+              <Text style={styles.separator}>
+                •
+              </Text>
+              <TouchableOpacity onPress={() => this.props.onOpenChannel && this.props.onOpenChannel(this.state.post.channel)}>
+                <Text style={styles.channelTitle}>#{ this.state.post.channel.name } </Text>
+              </TouchableOpacity>
+            </View>): (null)}
+            <Text style={styles.separator}>
+              •
             </Text>
+            <View style={styles.footerItem}>
+              <FontAwesome style={styles.footerItemIcon} name="comments"/>
+              <Text style={styles.bottomText}>
+                { this.state.post.commentsCount }
+              </Text>
+            </View>
           </View>
         </View>
-      </View>)
+      );
   }
 }
 
