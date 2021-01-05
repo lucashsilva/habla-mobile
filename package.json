@@ -44,7 +44,7 @@
     "@expo/vector-icons": "^10.0.0",
     "@types/node": "^10.12.18",
     "apollo-boost": "^0.1.22",
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "expo": "^35.0.0",
     "expo-facebook": "~7.0.0",
     "expo-file-system": "~7.0.0",
