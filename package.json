@@ -45,7 +45,7 @@
     "@types/node": "^10.12.18",
     "apollo-boost": "^0.1.22",
     "axios": "^0.18.0",
-    "expo": "^35.0.0",
+    "expo": "^35.0.1",
     "expo-facebook": "~7.0.0",
     "expo-file-system": "~7.0.0",
     "expo-image-picker": "~7.0.0",
